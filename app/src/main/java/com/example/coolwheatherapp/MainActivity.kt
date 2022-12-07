@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -55,10 +56,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting() {
-
-
-
-
       Image(
         painter = painterResource(id = R.drawable.sunnybackground),
         contentDescription ="test",
@@ -79,7 +76,9 @@ Box(  modifier = Modifier
             ,    contentAlignment = Center
 ) {
     Column(modifier = Modifier.align(TopCenter)) {
-        Row(modifier = Modifier.align(CenterHorizontally).padding(15.dp)) {
+        Row(modifier = Modifier
+            .align(CenterHorizontally)
+            .padding(15.dp)) {
             Text(  text = "Today",
                 color =  colorResource(id = R.color.SunnyTextYellow),
 
@@ -98,7 +97,10 @@ Box(  modifier = Modifier
                 painter = painterResource(id = R.drawable.sunnyvector),
                 contentDescription = "Down",
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(70.dp).align(CenterVertically).padding(10.dp)
+                modifier = Modifier
+                    .size(70.dp)
+                    .align(CenterVertically)
+                    .padding(10.dp)
             )
             Text(  text = "32°",
                 fontSize = 70.sp,
@@ -117,7 +119,9 @@ Box(  modifier = Modifier
             )
 
         }
-        Row(modifier = Modifier.align(CenterHorizontally).padding(top = 20.dp),Arrangement.Center) {
+        Row(modifier = Modifier
+            .align(CenterHorizontally)
+            .padding(top = 20.dp),Arrangement.Center) {
 
             Text(  text = "California, Los Angeles",
                 fontSize = 15.sp,
@@ -127,7 +131,9 @@ Box(  modifier = Modifier
             )
 
         }
-        Row(modifier = Modifier.align(CenterHorizontally).padding(top = 20.dp),Arrangement.Center) {
+        Row(modifier = Modifier
+            .align(CenterHorizontally)
+            .padding(top = 20.dp),Arrangement.Center) {
 
             Text(  text = "21 Oct 2019",
                 fontSize = 15.sp,
@@ -136,7 +142,9 @@ Box(  modifier = Modifier
             )
 
         }
-        Row(modifier = Modifier.align(CenterHorizontally).padding(top = 20.dp),Arrangement.Center) {
+        Row(modifier = Modifier
+            .align(CenterHorizontally)
+            .padding(top = 20.dp),Arrangement.Center) {
 
             Text(  text = "Feels like 30",
                 fontSize = 15.sp,
@@ -155,10 +163,22 @@ Box(  modifier = Modifier
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp)
             )
+
         }
+
+
+
     }
-    
+
+
             }
+        Box(modifier = Modifier.blur(100.dp).background(colorResource(id = R.color.SunnyYellow)).height(90.dp).width(80.dp).align(CenterHorizontally)
+            .padding(100.dp)   .clip(shape = RoundedCornerShape(size = 20.dp))
+
+            ,    contentAlignment = Center ) {
+
+
+        }
 
       }
     }
