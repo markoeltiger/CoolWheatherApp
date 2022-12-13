@@ -172,14 +172,47 @@ Box(  modifier = Modifier
 
 
             }
-        Box(modifier = Modifier.blur(100.dp).background(colorResource(id = R.color.SunnyYellow)).height(90.dp).width(80.dp).align(CenterHorizontally)
-            .padding(100.dp)   .clip(shape = RoundedCornerShape(size = 20.dp))
-
+        Box(modifier = Modifier
+            .clip(shape = RoundedCornerShape(size = 20.dp))
+            .blur(100.dp)
+            .padding(top = 40.dp)
+            .background(colorResource(id = R.color.SunnyYellow).copy(alpha = 0.8f))
+            .height(120.dp)
+            .width(300.dp)
+            .align(CenterHorizontally)
+            .clip(shape = RoundedCornerShape(size = 20.dp))
             ,    contentAlignment = Center ) {
+            Column() {
 
+
+            }
 
         }
+        Text(
+            modifier = Modifier.padding(start = 50.dp, top = 40.dp),
+            text = "Today`s Quote",
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp,
 
+            color =  colorResource(id = R.color.white2),
+            textAlign = TextAlign.Center
+
+        )
+
+        Text(
+            modifier = Modifier.padding(horizontal = 50.dp),
+            text = "Improve him believe opinion offered met and " +
+                    "end cheered forbade. Friendly as stronger " +
+                    "speedily by recurred. Son interest wandered " +
+                    "sir addition end say. Manners beloved affixed " +
+                    "picture men ask.",
+
+            fontSize = 17.sp,
+
+            color =  colorResource(id = R.color.white2),
+            textAlign = TextAlign.Start
+
+        )
       }
     }
 
