@@ -2,12 +2,13 @@ package com.example.coolwheatherapp.di
 
 import com.example.coolwheatherapp.data.network.ApiService
 import com.example.coolwheatherapp.util.Constatnts
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.Moshi.Builder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -23,10 +24,10 @@ fun provideApi(builder:Retrofit.Builder):ApiService{
 }
     @Provides
     @Singleton
-    fun provideRetrofit(builder:Retrofit.Builder):Retrofit.Builder{
+    fun provideRetrofit():Retrofit.Builder{
         return  Retrofit.Builder()
             .baseUrl(Constatnts.API_BASE_URL)
-            .addCallAdapterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
 
     }
 

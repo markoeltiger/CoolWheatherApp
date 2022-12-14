@@ -1,8 +1,10 @@
 package com.example.coolwheatherapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +16,8 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -35,13 +38,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.coolwheatherapp.ui.home.homeViewModel
 import com.example.coolwheatherapp.ui.theme.CoolWheatherAPPTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             CoolWheatherAPPTheme {
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -55,8 +64,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting() {
-      Image(
+fun Greeting(
+    homeViewModel: homeViewModel = viewModel()
+) {
+    var weatherDegree by remember { mutableStateOf("22") }
+    val Weather by homeViewModel.weatherResp.observeAsState()
+
+    weatherDegree= Weather?.current?.tempC.toString()
+Log.d("CurrentWeather",weatherDegree.toString())
+    Image(
         painter = painterResource(id = R.drawable.sunnybackground),
         contentDescription ="test",
         contentScale = ContentScale.FillBounds,
@@ -92,6 +108,7 @@ Box(  modifier = Modifier
                 modifier = Modifier
             )
         }
+
         Row(modifier = Modifier.align(CenterHorizontally),Arrangement.Center) {
             Image(
                 painter = painterResource(id = R.drawable.sunnyvector),
@@ -102,7 +119,7 @@ Box(  modifier = Modifier
                     .align(CenterVertically)
                     .padding(10.dp)
             )
-            Text(  text = "32°",
+            Text(  text = "${Weather?.current?.tempC.toString()}°",
                 fontSize = 70.sp,
                color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -111,7 +128,7 @@ Box(  modifier = Modifier
         }
         Row(modifier = Modifier.align(CenterHorizontally),Arrangement.Center) {
 
-            Text(  text = "Sunny",
+            Text(  text = "${Weather?.current?.condition?.text}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
@@ -123,7 +140,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "California, Los Angeles",
+            Text(  text = "${Weather?.location?.region}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -135,7 +152,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "21 Oct 2019",
+            Text(  text = "${Weather?.location?.localtime}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -146,7 +163,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "Feels like 30",
+            Text(  text = "Feels like ${Weather?.current?.feelslikeC}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -158,7 +175,7 @@ Box(  modifier = Modifier
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
             )
-            Text(  text = "Sunset 18:20",
+            Text(  text = "Humidity ${Weather?.current?.humidity}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp)
