@@ -55,9 +55,12 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ## Built With
 
-A cool modern weather application build with (Compose UI , coroutine ,retrofit ,MVVM Architecture , LiveData)
-
-* []()
+A cool modern weather application build with\
+* [Compose UI ](Compose UI )
+* [coroutine](coroutine)
+* [retrofit](retrofit)
+* [MVVM](MVVM)
+* [LiveData](LiveData)
 
 ## Getting Started
 
