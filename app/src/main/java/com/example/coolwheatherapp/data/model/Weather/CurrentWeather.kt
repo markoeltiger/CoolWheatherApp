@@ -1,4 +1,4 @@
-package com.example.coolwheatherapp.data.model
+package com.example.coolwheatherapp.data.model.Weather
 
 
 import com.squareup.moshi.Json

@@ -1,14 +1,15 @@
 package com.example.coolwheatherapp.di
 
-import com.example.coolwheatherapp.data.network.ApiService
+import com.example.coolwheatherapp.data.network.QuotesApiService
+import com.example.coolwheatherapp.data.network.WeatherApiService
 import com.example.coolwheatherapp.util.Constatnts
-import com.squareup.moshi.Moshi.Builder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -16,22 +17,38 @@ import javax.inject.Singleton
 object ApiModule {
 @Provides
 @Singleton
-fun provideApi(builder:Retrofit.Builder):ApiService{
+fun provideApi(@Named("weather") builder:Retrofit.Builder):WeatherApiService{
     return builder
         .build()
-        .create(ApiService::class.java)
+        .create(WeatherApiService::class.java)
 
 }
     @Provides
     @Singleton
-    fun provideRetrofit():Retrofit.Builder{
+    @Named("weather")
+     fun provideRetrofit():Retrofit.Builder{
         return  Retrofit.Builder()
             .baseUrl(Constatnts.API_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
 
     }
+    @Provides
+    @Singleton
+    fun provideQuotesApi(@Named("quotes") builder:Retrofit.Builder):QuotesApiService{
+        return builder
+            .build()
+            .create(QuotesApiService::class.java)
 
+    }
+    @Provides
+    @Singleton
+    @Named("quotes")
+    fun provideQuoteRetrofit():Retrofit.Builder{
+        return  Retrofit.Builder()
+            .baseUrl(Constatnts.QUOTES_API_BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
 
+    }
 
 
 }

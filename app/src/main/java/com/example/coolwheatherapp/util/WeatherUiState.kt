@@ -1,6 +1,6 @@
 package com.example.coolwheatherapp.util
 
-import com.example.coolwheatherapp.data.model.CurrentWeather
+import com.example.coolwheatherapp.data.model.Weather.CurrentWeather
 
 sealed class WeatherUiState {
     object Empty : WeatherUiState()

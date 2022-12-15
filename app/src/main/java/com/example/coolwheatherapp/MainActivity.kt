@@ -4,42 +4,33 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
- import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.MaterialTheme
+ import androidx.compose.foundation.layout.*
+ import androidx.compose.foundation.shape.RoundedCornerShape
+ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
+ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.blur
+ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.coolwheatherapp.ui.home.homeViewModel
+import com.example.coolwheatherapp.ui.home.HomeViewModel
 import com.example.coolwheatherapp.ui.theme.CoolWheatherAPPTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,12 +56,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(
-    homeViewModel: homeViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel()
 ) {
-    var weatherDegree by remember { mutableStateOf("22") }
-    val Weather by homeViewModel.weatherResp.observeAsState()
+    var toDaysQUOTE by remember { mutableStateOf("Loading") }
 
-    weatherDegree= Weather?.current?.tempC.toString()
+    var weatherDegree by remember { mutableStateOf("22") }
+    val weather by homeViewModel.weatherResp.observeAsState()
+    val quote by homeViewModel.quoteResp.observeAsState()
+        toDaysQUOTE= quote?.quote.toString() +"\n"+ quote?.author.toString()
+    weatherDegree = weather?.current?.tempC.toString()
 Log.d("CurrentWeather",weatherDegree.toString())
     Image(
         painter = painterResource(id = R.drawable.sunnybackground),
@@ -119,7 +113,7 @@ Box(  modifier = Modifier
                     .align(CenterVertically)
                     .padding(10.dp)
             )
-            Text(  text = "${Weather?.current?.tempC.toString()}°",
+            Text(  text = "${weather?.current?.tempC.toString()}°",
                 fontSize = 70.sp,
                color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -128,7 +122,7 @@ Box(  modifier = Modifier
         }
         Row(modifier = Modifier.align(CenterHorizontally),Arrangement.Center) {
 
-            Text(  text = "${Weather?.current?.condition?.text}",
+            Text(  text = "${weather?.current?.condition?.text}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
@@ -140,7 +134,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "${Weather?.location?.region}",
+            Text(  text = "${weather?.location?.region}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -152,7 +146,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "${Weather?.location?.localtime}",
+            Text(  text = "${weather?.location?.localtime}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -163,7 +157,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(top = 20.dp),Arrangement.Center) {
 
-            Text(  text = "Feels like ${Weather?.current?.feelslikeC}",
+            Text(  text = "Feels like ${weather?.current?.feelslikeC}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
@@ -175,7 +169,7 @@ Box(  modifier = Modifier
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center
             )
-            Text(  text = "Humidity ${Weather?.current?.humidity}",
+            Text(  text = "Humidity ${weather?.current?.humidity}",
                 fontSize = 15.sp,
                 color =  colorResource(id = R.color.SunnyTextYellow),
                 textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp)
@@ -217,14 +211,10 @@ Box(  modifier = Modifier
         )
 
         Text(
-            modifier = Modifier.padding(horizontal = 50.dp),
-            text = "Improve him believe opinion offered met and " +
-                    "end cheered forbade. Friendly as stronger " +
-                    "speedily by recurred. Son interest wandered " +
-                    "sir addition end say. Manners beloved affixed " +
-                    "picture men ask.",
+            modifier = Modifier.padding(horizontal = 50.dp).padding(top = 10.dp),
+            text = toDaysQUOTE,
 
-            fontSize = 17.sp,
+            fontSize = 18.sp,
 
             color =  colorResource(id = R.color.white2),
             textAlign = TextAlign.Start
