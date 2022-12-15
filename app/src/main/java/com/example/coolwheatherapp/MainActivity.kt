@@ -185,8 +185,7 @@ Box(  modifier = Modifier
             }
         Box(modifier = Modifier
             .clip(shape = RoundedCornerShape(size = 20.dp))
-            .blur(100.dp)
-            .padding(top = 40.dp)
+             .padding(top = 40.dp)
             .background(colorResource(id = R.color.SunnyYellow).copy(alpha = 0.8f))
             .height(120.dp)
             .width(300.dp)

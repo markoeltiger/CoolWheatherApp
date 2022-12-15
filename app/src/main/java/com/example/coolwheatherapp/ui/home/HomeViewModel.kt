@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coolwheatherapp.data.model.Quotes.SingleRandomQuote
 import com.example.coolwheatherapp.data.model.Weather.CurrentWeather
+import com.example.coolwheatherapp.data.model.Weather.WeatherForcast
 import com.example.coolwheatherapp.repository.QuoteRepo
 import com.example.coolwheatherapp.repository.WeatherRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,9 @@ class HomeViewModel @Inject constructor(
 private val _resp=MutableLiveData<CurrentWeather>()
     val weatherResp:LiveData<CurrentWeather>
     get()= _resp
+    private val _forcastresp=MutableLiveData<WeatherForcast>()
+    val forcastweatherResp:LiveData<WeatherForcast>
+        get()= _forcastresp
     private val _respRandom=MutableLiveData<SingleRandomQuote>()
     val quoteResp:LiveData<SingleRandomQuote>
         get()= _respRandom
@@ -38,6 +42,12 @@ private val _resp=MutableLiveData<CurrentWeather>()
     private fun getWeather() =viewModelScope.launch{
         weatherRepo.gerCurrentWeather().let {
             _resp.postValue(it)
+        weatherRepo.getWeatherForcast().let {
+            _forcastresp.postValue(it)
+        }
+
+
+
         }
        }
     }
