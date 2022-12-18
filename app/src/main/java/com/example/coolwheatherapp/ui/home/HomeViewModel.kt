@@ -11,6 +11,7 @@ import com.example.coolwheatherapp.repository.QuoteRepo
 import com.example.coolwheatherapp.repository.WeatherRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,7 +34,7 @@ private val _resp=MutableLiveData<CurrentWeather>()
     init {
         getWeather()
         getQuote()
-    }
+     }
     private fun getQuote() =viewModelScope.launch{
         quoteRepo.getRandomQuote().let {
             _respRandom.postValue(it)
@@ -45,8 +46,6 @@ private val _resp=MutableLiveData<CurrentWeather>()
         weatherRepo.getWeatherForcast().let {
             _forcastresp.postValue(it)
         }
-
-
 
         }
        }

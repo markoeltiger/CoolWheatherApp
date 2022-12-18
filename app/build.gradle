@@ -90,4 +90,9 @@ dependencies {
     //coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+    //timber
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+    //coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
 }
