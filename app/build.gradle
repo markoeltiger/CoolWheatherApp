@@ -64,6 +64,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_ui_version"
+    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
 
     //moshi
     implementation "com.squareup.moshi:moshi-kotlin:1.14.0"
