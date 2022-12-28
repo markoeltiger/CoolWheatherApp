@@ -24,6 +24,10 @@ class HomeViewModel @Inject constructor(
 private val _resp=MutableLiveData<CurrentWeather>()
     val weatherResp:LiveData<CurrentWeather>
     get()= _resp
+    private val location=MutableLiveData<String>()
+
+    val curlocation:MutableLiveData<String>
+        get()= location
     private val _forcastresp=MutableLiveData<WeatherForcast>()
     val forcastweatherResp:LiveData<WeatherForcast>
         get()= _forcastresp
@@ -32,16 +36,21 @@ private val _resp=MutableLiveData<CurrentWeather>()
         get()= _respRandom
 
     init {
-        getWeather()
-        getQuote()
+          getQuote()
      }
-    private fun getQuote() =viewModelScope.launch{
+
+     private fun getQuote() =viewModelScope.launch{
         quoteRepo.getRandomQuote().let {
             _respRandom.postValue(it)
         }
     }
-    private fun getWeather() =viewModelScope.launch{
-        weatherRepo.gerCurrentWeather().let {
+      fun getWeather(currentlocation: String) =viewModelScope.launch{
+        if (location!=null){
+            Timber.e(   "ViewModel Locations",location.value.toString())
+
+        }
+        weatherRepo.gerCurrentWeather(currentlocation).let {
+
             _resp.postValue(it)
         weatherRepo.getWeatherForcast().let {
             _forcastresp.postValue(it)

@@ -1,50 +1,54 @@
 package com.example.coolwheatherapp
 
-import android.content.Context
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
- import androidx.activity.ComponentActivity
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
- import androidx.compose.foundation.Image
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
- import androidx.compose.foundation.layout.*
- import androidx.compose.foundation.lazy.LazyRow
- import androidx.compose.foundation.lazy.itemsIndexed
- import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
- import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coolwheatherapp.data.model.Weather.Hour
+import com.example.coolwheatherapp.data.model.Weather.Location
 import com.example.coolwheatherapp.ui.home.HomeViewModel
 import com.example.coolwheatherapp.ui.theme.CoolWheatherAPPTheme
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -53,6 +57,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             CoolWheatherAPPTheme {
+
 
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -70,6 +75,59 @@ class MainActivity : ComponentActivity() {
 fun Greeting(
     homeViewModel: HomeViewModel = viewModel()
 ) {
+    // declare a global variable of FusedLocationProviderClient
+    lateinit var fusedLocationClient: FusedLocationProviderClient
+
+// in onCreate() initialize FusedLocationProviderClient
+    fusedLocationClient = LocationServices.getFusedLocationProviderClient( LocalContext.current)
+
+    if (ActivityCompat.checkSelfPermission(
+            LocalContext.current,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            LocalContext.current,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+     }
+    fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+        override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+
+        override fun isCancellationRequested() = false
+    })
+        .addOnSuccessListener { location: android.location.Location? ->
+            if (location == null)
+                        Log.e("Location", "cant get location")
+
+            else {
+                val lat = location.latitude.toString()
+                val lon = location.longitude.toString()
+                Log.e("Location", lon+""+lat)
+                homeViewModel.getWeather("$lat,$lon")
+
+
+            }
+
+        }
+//    fusedLocationClient.lastLocation
+//        .addOnSuccessListener { location->
+//            if (location != null) {
+//
+//
+//                 Log.e("Location", location.latitude.toString()+","+location.longitude.toString())
+//                // use your location object
+//                // get latitude , longitude and other info from this
+//            }
+//
+//        }
+
     var toDaysQUOTE by remember { mutableStateOf("Loading") }
 
     var weatherDegree by remember { mutableStateOf("22") }
@@ -121,7 +179,7 @@ Box(  modifier = Modifier
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://"+weather?.current?.condition?.icon.toString().drop(2))
+                    .data("https://" + weather?.current?.condition?.icon.toString().drop(2))
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.sunnyvector),
@@ -130,9 +188,8 @@ Box(  modifier = Modifier
                 modifier = Modifier
                     .size(100.dp)
                     .align(CenterVertically)
-                    .padding(10.dp)     
-            ,
-             )
+                    .padding(10.dp),
+            )
             Text(  text = "${weather?.current?.tempC.toString()}°",
                 fontSize = 70.sp,
                color =  colorResource(id = R.color.SunnyTextYellow),

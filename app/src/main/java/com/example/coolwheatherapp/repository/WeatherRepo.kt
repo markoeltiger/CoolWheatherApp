@@ -9,8 +9,8 @@ import javax.inject.Inject
 class WeatherRepo  @Inject constructor(
     private val apiService:WeatherApiService
 ){
-    suspend fun gerCurrentWeather(): CurrentWeather {
-        return apiService.getCurrentWeather(Constatnts.API_KEY,"Alexandria")
+    suspend fun gerCurrentWeather(city:String): CurrentWeather {
+        return apiService.getCurrentWeather(Constatnts.API_KEY,city)
     }
     suspend fun getWeatherForcast(): WeatherForcast {
         return apiService.getWeatherForcast(Constatnts.API_KEY,"Alexandria",1,"yes")
