@@ -11,7 +11,7 @@ plugins {
 
     defaultConfig {
         applicationId "com.example.coolwheatherapp"
-        minSdk 21
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -97,5 +97,11 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
     //coil
     implementation("io.coil-kt:coil-compose:2.2.2")
+    //glance
+    // For AppWidgets support
+    implementation "androidx.glance:glance-appwidget:1.0.0-alpha05"
+
+    // For Wear-Tiles support
+    implementation "androidx.glance:glance-wear-tiles:1.0.0-alpha05"
 
 }

@@ -103,8 +103,9 @@ fun Greeting(
     // declare a global variable of FusedLocationProviderClient
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
-// in onCreate() initialize FusedLocationProviderClient
+    // in onCreate() initialize FusedLocationProviderClient
     fusedLocationClient = LocationServices.getFusedLocationProviderClient( LocalContext.current)
+    //Request Location Permission
 
     if (ActivityCompat.checkSelfPermission(
             LocalContext.current,
@@ -174,21 +175,27 @@ fun Greeting(
 
     weatherDegree = weather?.current?.tempC.toString()
     var backgroundColor =(if (true) colorResource(id = R.color.SunnyYellow) else colorResource(id = R.color.CloudyBlue1))
-    var textcolorColor =(if (true) colorResource(id = R.color.SunnyTextYellow) else colorResource(id = R.color.CloudyBlue1Text))
+    var textcolorColor =(if (true) colorResource(id = R.color.white) else colorResource(id = R.color.CloudyBlue1Text))
 
     if (weatherDegree!="null"){
 
-        if (weather!!.current.condition.text.contains("cloud")){
-            backgroundImageState="https://s3-alpha-sig.figma.com/img/8f1a/5cc2/b71de89db70cab3375df43a1d5f67691?Expires=1673222400&Signature=Uys7eJG5HCS-mhVb8UZuQ9KsFy4IQMdoo7xVzCD2p9xYpGSQkikwe9Xu2PC8771ln7KB8PVNMuScJW0YVDQbU3rwcCkSZlXjNtMP6DqBzYZFfTjodTOHQhfZ3vQB0aPjndT~pF-qRnWJ0VXqfbuxzO97V3J63s0VkAgu~oKPq6Dofv8jno4K2ivHb1tT5qgPyVPG1lcmv98MF2DUDp30UvCO-NRblB7KtdmXhtliLEfES3VFKLy2z-UVqBDIN1RCgaRpY40OxmYWp03R4N7Ckr~CUVegfQszPf-p-0nAqTmC3Yn99Od7KwC6dQ1bD~VObqjoJnnJ0nXTfXapCI7uHw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
-        }
 
 
 
         val backgroundColor2 by animateColorAsState (if (weatherDegree.toFloat() <= 19 ) colorResource(id = R.color.CloudyBlue1) else colorResource(id = R.color.SunnyYellow))
-        val textColor2 by animateColorAsState (if (weatherDegree.toFloat() <= 19 ) colorResource(id = R.color.CloudyBlue1Text) else colorResource(id = R.color.SunnyTextYellow))
+        val textColor2 by animateColorAsState (if (weatherDegree.toFloat() <= 19 ) colorResource(id = R.color.white) else colorResource(id = R.color.SunnyTextYellow))
         textcolorColor=textColor2
 
         backgroundColor=backgroundColor2
+        if (weather!!.current.condition.text.contains("cloud")){
+            backgroundImageState="https://s3-alpha-sig.figma.com/img/8f1a/5cc2/b71de89db70cab3375df43a1d5f67691?Expires=1673222400&Signature=Uys7eJG5HCS-mhVb8UZuQ9KsFy4IQMdoo7xVzCD2p9xYpGSQkikwe9Xu2PC8771ln7KB8PVNMuScJW0YVDQbU3rwcCkSZlXjNtMP6DqBzYZFfTjodTOHQhfZ3vQB0aPjndT~pF-qRnWJ0VXqfbuxzO97V3J63s0VkAgu~oKPq6Dofv8jno4K2ivHb1tT5qgPyVPG1lcmv98MF2DUDp30UvCO-NRblB7KtdmXhtliLEfES3VFKLy2z-UVqBDIN1RCgaRpY40OxmYWp03R4N7Ckr~CUVegfQszPf-p-0nAqTmC3Yn99Od7KwC6dQ1bD~VObqjoJnnJ0nXTfXapCI7uHw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+        }
+        if (weather!!.current.condition.text.contains("rain")){
+              backgroundColor =(if (true) colorResource(id = R.color.RainyBlueGreen1) else colorResource(id = R.color.CloudyBlue1))
+
+            backgroundImageState="https://s3-alpha-sig.figma.com/img/7e97/efb6/e6067a078dfccea00cdca2a6444b65a8?Expires=1673222400&Signature=ALDNVkoEBiVP8tu8uDqRG1Bii4tvObGlWYxCZeztjFCaMEWNLwlfQAkLWs7Z-8RSBZF8zJ4yRvvlGVAHcVEtEDFZDYad09T5uEq-8Jx14NAmc20tjAl7j2uEmOwUNTiEDUHM81DQ61XvJ~nTt7iRUiGqOmIqBi-5MfwFY1Znlm0yBeiDw~bH~OR0uLH0fhhbj0mVdCGRW4XglGwClJ~Tsy2ARhgmRXOHrAINqK3MHWo4d3sbQqaCFLBlZU2JtTUKIn-cqJ-BB6P6uaUep83X~j7d9QldlA4V4jjhki1wFj9aAvziM5xHqGf1ng9gnNsh-RrgK-U5Bzmdq4v9YzBYRw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+        }
+
     }
 
     AsyncImage(
@@ -463,7 +470,6 @@ fun WeatherForcastItem(hour: Hour){
     }
 }
 
-//Request Location Permission
 
 
 @Preview(showBackground = true)
