@@ -10,12 +10,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -72,7 +75,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    Greeting()
+                      Greeting()
+                      QuotePart()
 
                 }
 
@@ -145,26 +149,14 @@ fun Greeting(
             }
 
         }
-//    fusedLocationClient.lastLocation
-//        .addOnSuccessListener { location->
-//            if (location != null) {
-//
-//
-//                 Log.e("Location", location.latitude.toString()+","+location.longitude.toString())
-//                // use your location object
-//                // get latitude , longitude and other info from this
-//            }
-//
-//        }
 
-    var toDaysQUOTE by remember { mutableStateOf("Loading") }
+
 
     var weatherDegree by remember { mutableStateOf("22") }
     val weather by homeViewModel.weatherResp.observeAsState()
     val weatherForcast by homeViewModel.forcastweatherResp.observeAsState()
 
-    val quote by homeViewModel.quoteResp.observeAsState()
-        toDaysQUOTE= quote?.quote.toString() +"\n"+ quote?.author.toString()
+
     weatherDegree = weather?.current?.tempC.toString()
       Image(
         painter = painterResource(id = R.drawable.sunnybackground),
@@ -322,6 +314,26 @@ if (hourlist!=null){
             }
 
         }
+
+      }
+    }
+@Composable
+fun QuotePart(
+    homeViewModel: HomeViewModel = viewModel()
+
+){
+    var toDaysQUOTE by remember { mutableStateOf("Loading") }
+    val quote by homeViewModel.quoteResp.observeAsState()
+    toDaysQUOTE= quote?.quote.toString() +"\n"+ quote?.author.toString()
+
+
+    Column(
+        modifier = Modifier.fillMaxHeight().padding(bottom = 50.dp),
+                Arrangement.Bottom
+
+        ) {
+
+
         Text(
             modifier = Modifier.padding(start = 50.dp, top = 40.dp),
             text = "Today`s Quote",
@@ -345,8 +357,8 @@ if (hourlist!=null){
             textAlign = TextAlign.Start
 
         )
-      }
     }
+}
 
 @Composable
 fun WeatherForcastItem(hour: Hour){
