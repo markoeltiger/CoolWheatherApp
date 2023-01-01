@@ -10,5 +10,7 @@
     <color name="SunnyYellow">#FAE2BD</color>
     <color name="SunnyTextYellow">#EFAA82</color>
     <color name="white2">#fafafa</color>
+    <color name="CloudyBlue1">#5A8BAB</color>
+    <color name="CloudyBlue1Text">#AED5E4</color>
 
 </resources>

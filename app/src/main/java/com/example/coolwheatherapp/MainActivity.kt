@@ -1,5 +1,9 @@
 package com.example.coolwheatherapp
 
+import com.example.coolwheatherapp.R
+
+
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -7,6 +11,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -32,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,8 +75,6 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             CoolWheatherAPPTheme {
-
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -91,6 +97,8 @@ class MainActivity : ComponentActivity() {
 fun Greeting(
     homeViewModel: HomeViewModel = viewModel()
 ) {
+    //permissionstatefordialog
+    var permissionDialog by remember { mutableStateOf(  false) }
 
     // declare a global variable of FusedLocationProviderClient
     lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -106,7 +114,7 @@ fun Greeting(
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
     ) {
-        val permissionsState = rememberMultiplePermissionsState(
+        var permissionsState = rememberMultiplePermissionsState(
             permissions = listOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -119,25 +127,30 @@ fun Greeting(
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_START) {
                         permissionsState.launchMultiplePermissionRequest()
+
                     }
                 }
+
                 lifecycleOwner.lifecycle.addObserver(observer)
 
                 onDispose {
                     lifecycleOwner.lifecycle.removeObserver(observer)
                 }
-            }
-        )
-     }
 
-    fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+            }
+
+        )
+        permissionDialog=permissionsState.allPermissionsGranted
+
+    }
+     fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
         override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
 
         override fun isCancellationRequested() = false
     })
         .addOnSuccessListener { location: android.location.Location? ->
             if (location == null)
-                        Log.e("Location", "cant get location")
+                permissionDialog=true
 
             else {
                 val lat = location.latitude.toString()
@@ -153,28 +166,66 @@ fun Greeting(
 
 
     var weatherDegree by remember { mutableStateOf("22") }
+    var backgroundImageState by remember { mutableStateOf("https://s3-alpha-sig.figma.com/img/e60f/9823/5589712f1ea25df942ef54ec21572aba?Expires=1673222400&Signature=EjmuSkxPYT8iE16urdcjTPJ7FJQLgv9nPJya3NAUjQJvWyAygQ0SmBONU9MuwE19wsWHNZoVofKOeTZFazN4Pewc8rAcllIhRlYROpF7cwkOnCqL4L9FmtIWuDJrcZ9htFEDZfWEQ7baGcdxVs9XTH-zBQG~9wr6nvb45Is3Lmjy2Bi0mA~bTCKQ0yqxV7g0h6xowN~LXuXS0peRf9RqqJ0cHuC0n-t9QER4CKqRGY27LhLvlPMaD~3f59WbBpQqmoqQsenS~fShgynvUzceoGOR2reEAJpJ73g4YqqAwR~3gZ8OUhA4tH9F-i-57biYTtJD~TpuVVgtyttlP-ujuQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4") }
+
     val weather by homeViewModel.weatherResp.observeAsState()
     val weatherForcast by homeViewModel.forcastweatherResp.observeAsState()
 
 
     weatherDegree = weather?.current?.tempC.toString()
-      Image(
-        painter = painterResource(id = R.drawable.sunnybackground),
-        contentDescription ="test",
+    var backgroundColor =(if (true) colorResource(id = R.color.SunnyYellow) else colorResource(id = R.color.CloudyBlue1))
+    var textcolorColor =(if (true) colorResource(id = R.color.SunnyTextYellow) else colorResource(id = R.color.CloudyBlue1Text))
+
+    if (weatherDegree!="null"){
+
+        if (weather!!.current.condition.text.contains("cloud")){
+            backgroundImageState="https://s3-alpha-sig.figma.com/img/8f1a/5cc2/b71de89db70cab3375df43a1d5f67691?Expires=1673222400&Signature=Uys7eJG5HCS-mhVb8UZuQ9KsFy4IQMdoo7xVzCD2p9xYpGSQkikwe9Xu2PC8771ln7KB8PVNMuScJW0YVDQbU3rwcCkSZlXjNtMP6DqBzYZFfTjodTOHQhfZ3vQB0aPjndT~pF-qRnWJ0VXqfbuxzO97V3J63s0VkAgu~oKPq6Dofv8jno4K2ivHb1tT5qgPyVPG1lcmv98MF2DUDp30UvCO-NRblB7KtdmXhtliLEfES3VFKLy2z-UVqBDIN1RCgaRpY40OxmYWp03R4N7Ckr~CUVegfQszPf-p-0nAqTmC3Yn99Od7KwC6dQ1bD~VObqjoJnnJ0nXTfXapCI7uHw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+        }
+
+
+
+        val backgroundColor2 by animateColorAsState (if (weatherDegree.toFloat() <= 19 ) colorResource(id = R.color.CloudyBlue1) else colorResource(id = R.color.SunnyYellow))
+        val textColor2 by animateColorAsState (if (weatherDegree.toFloat() <= 19 ) colorResource(id = R.color.CloudyBlue1Text) else colorResource(id = R.color.SunnyTextYellow))
+        textcolorColor=textColor2
+
+        backgroundColor=backgroundColor2
+    }
+
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(backgroundImageState)
+            .crossfade(true)
+            .build(),
+        placeholder = painterResource(R.drawable.sunnybackground),
+         contentDescription ="test",
         contentScale = ContentScale.FillBounds,
         modifier = Modifier.fillMaxSize()
     )
 
     Column (Modifier.fillMaxSize()){
-Box(  modifier = Modifier
+        AnimatedVisibility(
+            visible = permissionDialog
+        ) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = backgroundColor,
+                elevation = 4.dp
+            ) {
+                Text(
+                    text = stringResource(R.string.GiveMePermission),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    Box(modifier = Modifier
 
-    .align(CenterHorizontally)
-    .padding(top = 50.dp)
-    .height(350.dp)
-    .width(300.dp)
-    .clip(shape = RoundedCornerShape(size = 20.dp))
+        .align(CenterHorizontally)
+        .padding(top = 50.dp)
+        .height(350.dp)
+        .width(300.dp)
+        .clip(shape = RoundedCornerShape(size = 20.dp))
 
-    .background(colorResource(id = R.color.SunnyYellow))
+        .background(backgroundColor)
             ,    contentAlignment = Center
 ) {
     Column(modifier = Modifier.align(TopCenter)) {
@@ -182,7 +233,7 @@ Box(  modifier = Modifier
             .align(CenterHorizontally)
             .padding(15.dp)) {
             Text(  text = "Today",
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color =  textcolorColor,
 
                 textAlign = TextAlign.Center
 
@@ -213,7 +264,7 @@ Box(  modifier = Modifier
             )
             Text(  text = "${weather?.current?.tempC.toString()}°",
                 fontSize = 70.sp,
-               color =  colorResource(id = R.color.SunnyTextYellow),
+               color =  textcolorColor,
                 textAlign = TextAlign.Center
             )
 
@@ -223,7 +274,7 @@ Box(  modifier = Modifier
             Text(  text = "${weather?.current?.condition?.text}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color =textcolorColor,
                 textAlign = TextAlign.Center
             )
 
@@ -234,7 +285,7 @@ Box(  modifier = Modifier
 
             Text(  text = "${weather?.location?.region}",
                 fontSize = 15.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color = textcolorColor,
                 textAlign = TextAlign.Center
 
             )
@@ -246,7 +297,7 @@ Box(  modifier = Modifier
 
             Text(  text = "${weather?.location?.localtime}",
                 fontSize = 15.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color = textcolorColor,
                 textAlign = TextAlign.Center
             )
 
@@ -257,34 +308,28 @@ Box(  modifier = Modifier
 
             Text(  text = "Feels like ${weather?.current?.feelslikeC}",
                 fontSize = 15.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color =  textcolorColor,
                 textAlign = TextAlign.Center
             ,
               modifier=  Modifier.padding(end = 10.dp)
             )
             Text(  text = "|",
                 fontSize = 15.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color = textcolorColor,
                 textAlign = TextAlign.Center
             )
             Text(  text = "Humidity ${weather?.current?.humidity}",
                 fontSize = 15.sp,
-                color =  colorResource(id = R.color.SunnyTextYellow),
+                color =  textcolorColor,
                 textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp)
             )
-
         }
-
-
-
     }
-
-
-            }
+}
         Box(modifier = Modifier
             .clip(shape = RoundedCornerShape(size = 20.dp))
             .padding(top = 40.dp)
-            .background(colorResource(id = R.color.SunnyYellow).copy(alpha = 0.8f))
+            .background(backgroundColor.copy(alpha = 0.8f))
             .height(120.dp)
             .width(300.dp)
             .align(CenterHorizontally)
@@ -301,7 +346,7 @@ LazyRow{
 
     }
 else{
-        val hourlist= weatherForcast?.forecast?.forecastday?.get(0)?.hour
+val hourlist= weatherForcast?.forecast?.forecastday?.get(0)?.hour
 if (hourlist!=null){
         itemsIndexed(items = hourlist!!){index, item ->
     WeatherForcastItem(hour = item)
@@ -328,7 +373,9 @@ fun QuotePart(
 
 
     Column(
-        modifier = Modifier.fillMaxHeight().padding(bottom = 50.dp),
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(bottom = 50.dp),
                 Arrangement.Bottom
 
         ) {

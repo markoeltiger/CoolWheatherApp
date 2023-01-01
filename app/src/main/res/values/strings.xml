@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CoolWheatherAPP</string>
+    <string name="GiveMePermission">Please Give Me permission to location !</string>
+
 </resources>
