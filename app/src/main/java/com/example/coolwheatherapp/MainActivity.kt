@@ -59,6 +59,8 @@ import com.example.coolwheatherapp.ui.theme.CoolWheatherAPPTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -66,6 +68,7 @@ import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -80,10 +83,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
+                    SwipeRefreshCompose()
                       Greeting()
                       QuotePart()
-
                 }
 
 
@@ -92,11 +94,35 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun SwipeRefreshCompose() {
+
+    var refreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(refreshing) {
+        if (refreshing) {
+            delay(3000)
+            refreshing = false
+        }
+    }
+
+    SwipeRefresh(
+
+        state = rememberSwipeRefreshState(isRefreshing = refreshing),
+        modifier = Modifier.fillMaxSize(),
+        onRefresh = { refreshing = true },
+    ) {
+
+        // list view
+
+    }
+
+}
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Greeting(
     homeViewModel: HomeViewModel = viewModel()
 ) {
+
     //permissionstatefordialog
     var permissionDialog by remember { mutableStateOf(  false) }
 
@@ -198,6 +224,11 @@ fun Greeting(
 
     }
 
+
+
+
+
+
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(backgroundImageState)
@@ -208,8 +239,7 @@ fun Greeting(
         contentScale = ContentScale.FillBounds,
         modifier = Modifier.fillMaxSize()
     )
-
-    Column (Modifier.fillMaxSize()){
+     Column (Modifier.fillMaxSize()){
         AnimatedVisibility(
             visible = permissionDialog
         ) {
