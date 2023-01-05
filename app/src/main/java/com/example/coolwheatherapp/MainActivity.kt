@@ -13,6 +13,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,9 +34,13 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
@@ -44,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Lifecycle
@@ -69,6 +75,9 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import java.lang.Float.max
+import java.lang.Float.min
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -86,7 +95,7 @@ class MainActivity : ComponentActivity() {
                     SwipeRefreshCompose()
                       Greeting()
                       QuotePart()
-                }
+                  }
 
 
             }
@@ -117,12 +126,125 @@ fun SwipeRefreshCompose() {
     }
 
 }
+@Composable
+fun raindroplayout(){
+    var  modifier=Modifier.size(100.dp)
+    Layout(
+    modifier = modifier.rotate(30f), //raindrop rotation angle
+
+    content = { // child composable
+        rainDrop(modifier.fillMaxSize())
+        rainDrop(modifier.fillMaxSize())
+        rainDrop(modifier.fillMaxSize())
+    }
+) { measurables, constraints ->
+    // List of measured children
+    val placeables = measurables.mapIndexed { index, measurable ->
+        // Measure each children
+        val height = when (index) {
+            0 -> constraints.maxHeight * 0.8f
+            1 -> constraints.maxHeight * 0.9f
+            2 -> constraints.maxHeight * 0.6f
+            else -> 0f
+        }
+        measurable.measure(
+            constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+                maxWidth = constraints.maxWidth / 10, // raindrop width
+                maxHeight = height.toInt(),
+            )
+        )
+    }
+
+    // Set the size of the layout as big as it can
+    layout(constraints.maxWidth, constraints.maxHeight) {
+        var xPosition = constraints.maxWidth / ((placeables.size + 1) * 2)
+
+        // Place children in the parent layout
+        placeables.forEachIndexed { index, placeable ->
+            // Position item on the screen
+            placeable.place(x = xPosition, y = 0)
+
+            // Record the y co-ord placed up to
+            xPosition += (constraints.maxWidth / ((placeables.size + 1) * 0.8f)).roundToInt()
+        }
+    }
+}}
+
+
+
+
+@Composable
+fun rainDrop(modifier: Modifier = Modifier,
+             durationMillis: Int = 1000  ) {
+
+    //InfiniteTransition:  0f ~ 1f
+    val animateTween by rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis, easing = LinearEasing),
+            RepeatMode.Restart //start anim
+        )
+    )
+
+    Canvas(modifier) {
+
+        // scope ： range of drawing
+        val width = size.width
+        val x: Float = size.width / 2
+
+        val scopeHeight = size.height - width / 2
+
+        // gap of 2 lines
+        val space = size.height / 2.2f + width / 2
+        val spacePos = scopeHeight * animateTween
+        val sy1 = spacePos - space / 2
+        val sy2 = spacePos + space / 2
+
+        // line length
+        val lineHeight = scopeHeight - space
+
+        // line1
+        val line1y1 = max(0f, sy1 - lineHeight)
+        val line1y2 = max(line1y1, sy1)
+
+        // line2
+        val line2y1 = min(sy2, scopeHeight)
+        val line2y2 = min(line2y1 + lineHeight, scopeHeight)
+
+        // draw
+        drawLine(
+            Color.Black,
+            Offset(x, line1y1),
+            Offset(x, line1y2),
+            strokeWidth = width,
+            colorFilter = ColorFilter.tint(
+                Color.Black
+            ),
+            cap = StrokeCap.Round
+        )
+
+        drawLine(
+            Color.Black,
+            Offset(x, line2y1),
+            Offset(x, line2y2),
+            strokeWidth = width,
+            colorFilter = ColorFilter.tint(
+                Color.Black
+            ),
+            cap = StrokeCap.Round
+        )
+    }
+
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Greeting(
     homeViewModel: HomeViewModel = viewModel()
 ) {
-
     //permissionstatefordialog
     var permissionDialog by remember { mutableStateOf(  false) }
 
@@ -239,7 +361,8 @@ fun Greeting(
         contentScale = ContentScale.FillBounds,
         modifier = Modifier.fillMaxSize()
     )
-     Column (Modifier.fillMaxSize()){
+
+    Column (Modifier.fillMaxSize()){
         AnimatedVisibility(
             visible = permissionDialog
         ) {
@@ -265,7 +388,9 @@ fun Greeting(
         .background(backgroundColor)
             ,    contentAlignment = Center
 ) {
-    Column(modifier = Modifier.align(TopCenter)) {
+     //   raindroplayout()
+
+        Column(modifier = Modifier.align(TopCenter)) {
         Row(modifier = Modifier
             .align(CenterHorizontally)
             .padding(15.dp)) {
