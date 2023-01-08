@@ -128,7 +128,7 @@ fun SwipeRefreshCompose() {
 }
 @Composable
 fun raindroplayout(){
-    var  modifier=Modifier.size(100.dp)
+    var  modifier=Modifier.size(500.dp)
     Layout(
     modifier = modifier.rotate(30f), //raindrop rotation angle
 
@@ -216,23 +216,23 @@ fun rainDrop(modifier: Modifier = Modifier,
 
         // draw
         drawLine(
-            Color.Black,
+            Color.White,
             Offset(x, line1y1),
             Offset(x, line1y2),
             strokeWidth = width,
             colorFilter = ColorFilter.tint(
-                Color.Black
+                Color.White
             ),
             cap = StrokeCap.Round
         )
 
         drawLine(
-            Color.Black,
+            Color.White,
             Offset(x, line2y1),
             Offset(x, line2y2),
             strokeWidth = width,
             colorFilter = ColorFilter.tint(
-                Color.Black
+                Color.White
             ),
             cap = StrokeCap.Round
         )
@@ -388,7 +388,7 @@ fun Greeting(
         .background(backgroundColor)
             ,    contentAlignment = Center
 ) {
-     //   raindroplayout()
+ //  raindroplayout()
 
         Column(modifier = Modifier.align(TopCenter)) {
         Row(modifier = Modifier

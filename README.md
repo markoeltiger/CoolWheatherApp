@@ -82,13 +82,8 @@ Java SDK
 git clone https://github.com/markoeltiger/coolweatherapp.git
 ```
 
-3. Install NPM packages
 
-```sh
-npm install
-```
-
-4. Enter your API in `config.js`
+3. Enter your API in `Constats.kt`
 
 ```JS
 const API_KEY = 'ENTER YOUR API';
