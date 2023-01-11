@@ -388,6 +388,7 @@ fun Greeting(
         .background(backgroundColor)
             ,    contentAlignment = Center
 ) {
+
  //  raindroplayout()
 
         Column(modifier = Modifier.align(TopCenter)) {
@@ -497,6 +498,7 @@ fun Greeting(
             .align(CenterHorizontally)
             .clip(shape = RoundedCornerShape(size = 20.dp))
             ,    contentAlignment = Center ) {
+
             Column {
 LazyRow{
     if (weatherForcast?.equals(null) == true){
