@@ -8,6 +8,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -56,6 +58,9 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coolwheatherapp.data.model.Weather.Hour
@@ -92,7 +97,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SwipeRefreshCompose()
+                     SwipeRefreshCompose()
                       Greeting()
                       QuotePart()
                   }
@@ -336,12 +341,12 @@ fun Greeting(
 
         backgroundColor=backgroundColor2
         if (weather!!.current.condition.text.contains("cloud")){
-            backgroundImageState="https://s3-alpha-sig.figma.com/img/8f1a/5cc2/b71de89db70cab3375df43a1d5f67691?Expires=1673222400&Signature=Uys7eJG5HCS-mhVb8UZuQ9KsFy4IQMdoo7xVzCD2p9xYpGSQkikwe9Xu2PC8771ln7KB8PVNMuScJW0YVDQbU3rwcCkSZlXjNtMP6DqBzYZFfTjodTOHQhfZ3vQB0aPjndT~pF-qRnWJ0VXqfbuxzO97V3J63s0VkAgu~oKPq6Dofv8jno4K2ivHb1tT5qgPyVPG1lcmv98MF2DUDp30UvCO-NRblB7KtdmXhtliLEfES3VFKLy2z-UVqBDIN1RCgaRpY40OxmYWp03R4N7Ckr~CUVegfQszPf-p-0nAqTmC3Yn99Od7KwC6dQ1bD~VObqjoJnnJ0nXTfXapCI7uHw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+            backgroundImageState="https://i.ibb.co/hygfQhz/b71de89db70cab3375df43a1d5f67691.jpg"
         }
         if (weather!!.current.condition.text.contains("rain")){
               backgroundColor =(if (true) colorResource(id = R.color.RainyBlueGreen1) else colorResource(id = R.color.CloudyBlue1))
 
-            backgroundImageState="https://s3-alpha-sig.figma.com/img/7e97/efb6/e6067a078dfccea00cdca2a6444b65a8?Expires=1673222400&Signature=ALDNVkoEBiVP8tu8uDqRG1Bii4tvObGlWYxCZeztjFCaMEWNLwlfQAkLWs7Z-8RSBZF8zJ4yRvvlGVAHcVEtEDFZDYad09T5uEq-8Jx14NAmc20tjAl7j2uEmOwUNTiEDUHM81DQ61XvJ~nTt7iRUiGqOmIqBi-5MfwFY1Znlm0yBeiDw~bH~OR0uLH0fhhbj0mVdCGRW4XglGwClJ~Tsy2ARhgmRXOHrAINqK3MHWo4d3sbQqaCFLBlZU2JtTUKIn-cqJ-BB6P6uaUep83X~j7d9QldlA4V4jjhki1wFj9aAvziM5xHqGf1ng9gnNsh-RrgK-U5Bzmdq4v9YzBYRw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
+            backgroundImageState="https://i.ibb.co/LCrg3dp/e6067a078dfccea00cdca2a6444b65a8.jpg"
         }
 
     }
@@ -627,7 +632,36 @@ fun WeatherForcastItem(hour: Hour){
     }
 }
 
+@Composable
+fun SplashScreen(navController: NavController) {
+    val scale = remember {
+        androidx.compose.animation.core.Animatable(0f)
+    }
 
+    // Animation
+    LaunchedEffect(key1 = true) {
+        scale.animateTo(
+            targetValue = 0.7f,
+            // tween Animation
+            animationSpec = tween(
+                durationMillis = 800,
+                easing = {
+                    OvershootInterpolator(4f).getInterpolation(it)
+                }))
+        // Customize the delay time
+        delay(3000L)
+        navController.navigate("main_screen")
+    }
+
+    // Image
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()) {
+        // Change the logo
+        Image(painter = painterResource(id = R.drawable.coollogo),
+            contentDescription = "Logo",
+            modifier = Modifier.scale(scale.value))
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
