@@ -328,7 +328,7 @@ fun Greeting(
 
     weatherDegree = weather?.current?.tempC.toString()
     var backgroundColor =(if (true) colorResource(id = R.color.SunnyYellow) else colorResource(id = R.color.CloudyBlue1))
-    var textcolorColor =(if (true) colorResource(id = R.color.white) else colorResource(id = R.color.CloudyBlue1Text))
+        var textcolorColor =(if (true) colorResource(id = R.color.white) else colorResource(id = R.color.CloudyBlue1Text))
 
     if (weatherDegree!="null"){
 
